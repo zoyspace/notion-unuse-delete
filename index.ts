@@ -7,7 +7,7 @@ if (!DATA_SOURCE_ID) throw new Error("NOTION_DATA_SOURCE_ID がありません")
 const NOTION_VERSION = "2025-09-03";
 const NOTION_API_BASE = "https://api.notion.com/v1";
 
-const dryRun = false;
+const dryRun = true;
 
 const WORK_DATE_PROPERTY = "work日時";
 const TAG_PROPERTY = "タグ";
