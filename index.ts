@@ -4,10 +4,10 @@ const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID;
 if (!NOTION_TOKEN) throw new Error("NOTION_TOKEN がありません");
 if (!DATA_SOURCE_ID) throw new Error("NOTION_DATA_SOURCE_ID がありません");
 
-const NOTION_VERSION = "2025-09-03";
+const NOTION_VERSION = "2026-03-11";
 const NOTION_API_BASE = "https://api.notion.com/v1";
 
-const dryRun = true;
+const dryRun = false;
 
 const WORK_DATE_PROPERTY = "work日時";
 const TAG_PROPERTY = "タグ";
@@ -27,6 +27,7 @@ type QueryResponse = {
 };
 
 async function notionPost(path: string, body: unknown) {
+  const bodyString = JSON.stringify(body);
   const res = await fetch(`${NOTION_API_BASE}${path}`, {
     method: "POST",
     headers: {
@@ -34,8 +35,9 @@ async function notionPost(path: string, body: unknown) {
       "Notion-Version": NOTION_VERSION,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body),
+    body: bodyString,
   });
+
 
   const data = await res.json();
 
@@ -131,7 +133,8 @@ function hasNoneTag(page: Page) {
 async function queryTargetPages(fromDate: string, toDate: string) {
   const data = (await notionPost(`/data_sources/${DATA_SOURCE_ID}/query`, {
     page_size: 100,
-    in_trash: false,
+    // in_trash: false,
+    is_archived: false,
     result_type: "page",
 
     filter: {
@@ -166,7 +169,6 @@ async function queryTargetPages(fromDate: string, toDate: string) {
   if (data.has_more) {
     console.log("注意: 取得結果が100件を超えています。今回は最初の100件だけ処理します。");
   }
-
   return data.results.filter(isPage);
 }
 
